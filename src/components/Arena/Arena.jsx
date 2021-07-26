@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect, useRef } from "react";
 import PlayBox from "../PlayBox";
 
 const winCombinations = [
@@ -11,26 +11,26 @@ const winCombinations = [
   "048",
   "246",
 ];
-const players = {
-  X: { currentGameMoves: "" },
-  O: { currentGameMoves: "" },
-
-  updatePlayerMoves(player, move) {
-    this[player].currentGameMoves = this[player].currentGameMoves + move;
-    return this[player].currentGameMoves;
-  },
-};
 const aveilableWinCombinations = {
   left: [...winCombinations],
   X: [],
   O: [],
-  handleCombinations(player, number) {
-    const oponent = this.getOponent(player);
 
-    if (this.left.length > 0) {
+  isGameDraw() {
+    const { X, O, left } = this;
+    const isGameDraw = !(X.length + O.length + left.length);
+    isGameDraw && this.reset();
+    return isGameDraw;
+  },
+
+  update(player, number) {
+    const { getOponent, left } = this;
+    const oponent = getOponent(player);
+
+    if (left.length > 0) {
       const newLeft = [];
       //   const newPlayers = ["newPlayers"];
-      this.left.forEach((comb) => {
+      left.forEach((comb) => {
         (comb.includes(number) ? this[player] : newLeft).push(comb);
       });
 
@@ -44,76 +44,137 @@ const aveilableWinCombinations = {
   getOponent(player) {
     return player === "X" ? "O" : "X";
   },
+  reset() {
+    this.left = [...winCombinations];
+    this.X = [];
+    this.O = [];
+  },
 };
 
-export default class Arena extends React.Component {
-  state = {
-    move: "X",
-    makedMoves: Array(9).fill(null),
-  };
+const movesStatistic = {
+  X: "",
+  O: "",
+  update(player, move) {
+    this[player] += move;
+  },
+  reset() {
+    this.X = "";
+    this.O = "";
+  },
+};
 
-  checkWinner(player, playerMoves) {
-    const sortMoves = playerMoves.split("").sort().join("");
-    console.log("playerMoves", sortMoves);
-    console.log("combinations", aveilableWinCombinations[player]);
-    aveilableWinCombinations[player].forEach((comb) => {
-      const reg = new RegExp(`[^${comb}]`, "g");
-      const match = sortMoves.replace(reg, "");
-      if (comb === match) alert("Выигрыш Игрока " + player);
-    });
-  }
+export default function Arena({
+  handlePlayerWin,
+  playerMark,
+  changePlayer,
+  winnerCombination,
+  freezeArena,
+}) {
+  const isFirstRender = useRef(true);
+  // const freezeArena = useRef(false);
 
-  checkAveilableMoves() {
-    if (this.state.makedMoves.join("").length >= this.state.makedMoves.length) {
-      alert("Ходить больше некуда! Ничья!");
-      this.resetArena();
-    }
-  }
+  // const arenaMarks = useRef(Array(9).fill(null));
+  const [arenaMarks, setArenaMarks] = useState(Array(9).fill(null));
+  const [arenaMarksNum, setArenaMarksNum] = useState(() => countArenaMarks());
 
-  changePlayer() {
-    this.setState(({ move }) => ({ move: move === "X" ? "O" : "X" }));
-  }
-
-  resetArena() {
-    this.setState({ move: "X", makedMoves: Array(9).fill(null) });
-  }
-
-  makeMove = (boxIndex) => {
-    if (this.state.makedMoves[boxIndex]) {
-      console.log("Так нельзя!");
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = !isFirstRender.current;
       return;
     }
 
-    this.setState(({ makedMoves }) => {
-      makedMoves[boxIndex] = this.state.move;
-      return { makedMoves };
-    });
+    // console.log("Player Mark Box! (arenaMarksNum) " + arenaMarksNum);
+    if (arenaMarksNum >= 5) {
+      checkGameEnd();
+    }
+    changePlayer();
+  }, [arenaMarksNum]);
 
-    setTimeout(() => {
-      const player = this.state.move;
+  useEffect(() => {
+    if (!freezeArena && countArenaMarks()) onRoundEnd();
+  }, [freezeArena]);
 
-      const playerMoves = players.updatePlayerMoves(player, boxIndex);
-      if (playerMoves.length >= 3) this.checkWinner(player, playerMoves);
+  const makeMove = (boxIndex) => {
+    if (freezeArena) return;
 
-      aveilableWinCombinations.handleCombinations(this.state.move, boxIndex);
+    if (arenaMarks[boxIndex]) {
+      alert("Ячейка занята!");
+      return;
+    }
+    arenaMarks[boxIndex] = playerMark;
+    setArenaMarksNum(countArenaMarks());
 
-      this.checkAveilableMoves();
-
-      this.changePlayer();
-    });
+    movesStatistic.update(playerMark, boxIndex);
+    aveilableWinCombinations.update(playerMark, boxIndex);
   };
 
-  render() {
-    return (
+  function checkGameEnd() {
+    const winnerCombination = checkWinnerCombination();
+    if (winnerCombination) {
+      handlePlayerWin(playerMark, winnerCombination);
+      return;
+    }
+
+    aveilableWinCombinations.isGameDraw() && onGameDraw();
+  }
+
+  function countArenaMarks() {
+    return arenaMarks.join("").length;
+  }
+
+  function checkWinnerCombination() {
+    const playerMoves = movesStatistic[playerMark];
+    const winComb = [...aveilableWinCombinations[playerMark]];
+
+    const sortMoves = playerMoves.split("").sort().join("");
+    // console.log("playerMoves", sortMoves);
+    // console.log("combinations", winComb);
+    return winComb.find((comb) => {
+      const reg = new RegExp(`[^${comb}]`, "g");
+      const match = sortMoves.replace(reg, "");
+      if (comb === match) return comb;
+    });
+  }
+
+  // function onWin(winner) {
+  //   alert("Победа игрока #" + playerMark);
+  //   console.log("winner", winner);
+  //   handlePlayerWin(winner);
+  //   onRoundEnd();
+  // }
+  function onGameDraw() {
+    alert("Нет выиграшных ходов :(? - Ничья!");
+    onRoundEnd();
+  }
+
+  function onRoundEnd() {
+    console.log("End of the round");
+    resetArena();
+    movesStatistic.reset();
+    console.log(movesStatistic);
+    aveilableWinCombinations.reset();
+
+    console.log(aveilableWinCombinations);
+  }
+
+  function resetArena() {
+    setArenaMarks(Array(9).fill(null));
+  }
+
+  return (
+    <>
+      {" "}
       <div className="game__play-stage">
-        {this.state.makedMoves.map((playerMark, boxIndex) => (
+        {arenaMarks.map((mark, boxIndex) => (
           <PlayBox
             key={boxIndex}
-            getMark={() => this.makeMove(boxIndex)}
-            mark={playerMark}
+            getMark={() => makeMove(boxIndex)}
+            mark={mark}
           />
         ))}
       </div>
-    );
-  }
+      <hr />
+      {winnerCombination && <h1>{winnerCombination}</h1>}
+    </>
+  );
 }
