@@ -57,13 +57,14 @@
     width: 75%;
 }
 .greeting-form__input{
-  font-size: inherit;
+    font-size: inherit;
+    margin: 0 auto;
+    display: block;
 }
 .greeting-form__submit-btn{
   font-size: inherit;
     display: block;
     margin: auto;
-    cursor: pointer;
 }
 
 .game {
