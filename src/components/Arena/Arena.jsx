@@ -127,8 +127,7 @@ export default function Arena({
     const winComb = [...aveilableWinCombinations[playerMark]];
 
     const sortMoves = playerMoves.split("").sort().join("");
-    // console.log("playerMoves", sortMoves);
-    // console.log("combinations", winComb);
+
     return winComb.find((comb) => {
       const reg = new RegExp(`[^${comb}]`, "g");
       const match = sortMoves.replace(reg, "");
@@ -136,25 +135,15 @@ export default function Arena({
     });
   }
 
-  // function onWin(winner) {
-  //   alert("Победа игрока #" + playerMark);
-  //   console.log("winner", winner);
-  //   handlePlayerWin(winner);
-  //   onRoundEnd();
-  // }
   function onGameDraw() {
     alert("Нет выиграшных ходов :(? - Ничья!");
     onRoundEnd();
   }
 
   function onRoundEnd() {
-    console.log("End of the round");
     resetArena();
     movesStatistic.reset();
-    console.log(movesStatistic);
     aveilableWinCombinations.reset();
-
-    console.log(aveilableWinCombinations);
   }
 
   function resetArena() {
@@ -172,9 +161,12 @@ export default function Arena({
             mark={mark}
           />
         ))}
+        {winnerCombination && (
+          <div
+            className={`game__win-line game__win-line--${winnerCombination}`}
+          ></div>
+        )}
       </div>
-      <hr />
-      {winnerCombination && <h1>{winnerCombination}</h1>}
     </>
   );
 }

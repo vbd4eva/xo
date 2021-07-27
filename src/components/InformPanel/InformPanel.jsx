@@ -15,20 +15,24 @@ export default function InformPanel({
 
   return (
     <div className="game__score">
-      {freezeArena && (
-        <button type="button" onClick={nextGame}>
-          Продолжить игру
-        </button>
-      )}
-      <p>Score</p>
+      <p className="score__heading">Score</p>
       {Object.keys(players).map((key) => {
         const { name, score } = players[key];
         return (
-          <p key={key}>
-            <i>{key}</i> <b>{name}: </b> <span>{score}</span>
+          <p className="score__player-info" key={key}>
+            <i>{key}</i> <span>{name}: </span> <b>{score}</b>
           </p>
         );
       })}
+      {freezeArena && (
+        <button
+          className="button score__next-game-btn"
+          type="button"
+          onClick={nextGame}
+        >
+          Play next
+        </button>
+      )}
     </div>
   );
 }
