@@ -90,6 +90,8 @@
 
   background-color: var(--color-game-play-box-bg);
 
+  overflow: hidden;
+
   cursor: pointer;
 }
 
@@ -110,6 +112,10 @@
   height: var(--mark-O-size);
   border: solid var(--mark-line-thickness) var(--color-play-mark-line);
   border-radius: 50%;
+  animation-name: animate-arena-O;
+  animation-duration: 250ms;
+    /* animation-timing-function: cubic-bezier(.91,1.84,.72,.41); */
+    animation-timing-function: linear;
 }
 
 .game__play-mark.X{
@@ -130,11 +136,18 @@
 
   background-color: var(--color-play-mark-line);
 
+  
+  animation-duration: 250ms;
+  animation-timing-function: linear;
+
 }
 .game__play-mark.X::before{
-  transform: translateY(-50%) rotate(-45deg);
+  animation-name: animate-arena-X-1;
+   transform: translateY(-50%) rotate(-45deg);
+ 
 }
 .game__play-mark.X::after{
+  animation-name: animate-arena-X-2;
   transform: translateY(-50%) rotate(45deg);
 }
 
@@ -143,6 +156,9 @@
   width: 94%;
   height: var(--mark-line-thickness);
   background-color: var(--color-play-win-line);
+  animation-name: animate-arena-line;
+  animation-duration: 250ms;
+  animation-timing-function: linear;
 }
 .game__win-line--012{
   left: 3%;
@@ -184,6 +200,7 @@
     top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-45deg);
+  
 }
 
 .score__heading{margin:0;}
@@ -213,4 +230,46 @@
   width: 100%;
   padding: 12px;
   box-sizing: border-box;
+}
+
+@keyframes animate-arena-X-1 {
+  0% {
+         transform: translateY(-50%) rotate(-45deg) scale(2);
+         opacity: 0;
+  }
+  100% {
+        transform: translateY(-50%) rotate(-45deg) scale(1);
+        opacity: 1;
+  }
+}
+@keyframes animate-arena-X-2 {
+  0% {
+    transform: translateY(-50%) rotate(45deg) scale(0);
+    opacity: 0;
+  }
+  100%{
+    transform: translateY(-50%) rotate(45deg) scale(1);
+    opacity: 1;
+  }
+}
+@keyframes animate-arena-O {
+  0%{
+    transform: translate(-50%, -50% ) scale(2);
+    opacity: 0;
+  }
+  75%{
+    transform: translate(-50%, -50% ) scale(0.7);
+  }
+    100%{
+    transform: translate(-50%, -50% ) scale(1);
+    opacity: 1;
+  }
+}
+@keyframes animate-arena-line {
+  0%{
+    width: 0;
+  }
+  100%{
+    width: 100%;
+  }
 }
