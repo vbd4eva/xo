@@ -47,25 +47,6 @@
   color: var(--color-font)
 }
 
-.greeting-form{
-     font-size: var(--font-size);
-   color: var(--color-font);
-}
-.greeting-form__label{
-    display: block;
-    margin: 0 auto 20px;
-    width: 75%;
-}
-.greeting-form__input{
-    font-size: inherit;
-    margin: 0 auto;
-    display: block;
-}
-.greeting-form__submit-btn{
-  font-size: inherit;
-    display: block;
-    margin: auto;
-}
 
 .game {
   width: var(--game-width);

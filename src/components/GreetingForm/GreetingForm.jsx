@@ -1,8 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import s from "./GreetingForm.module.css";
 
 export default function GreetingForm({ onHandleForm }) {
   const [namePlayerX, setNamePlayerX] = useState("");
   const [namePlayerO, setNamePlayerO] = useState("");
+  const [isStartBtnHovered, setIsStartBtnHovered] = useState(false);
+
+  useEffect(() => {
+    console.log(isStartBtnHovered && "Ховер начался");
+    console.log(!isStartBtnHovered && "Ховер закончился");
+  }, [isStartBtnHovered]);
 
   const inputTextFunctions = {
     namePlayerX: setNamePlayerX,
@@ -22,26 +29,29 @@ export default function GreetingForm({ onHandleForm }) {
     });
   }
 
+  function buttonHoveHandler(e) {}
+
   const disabled = !(namePlayerX.trim() && namePlayerO.trim());
 
   return (
-    <form className="greeting-form" autoComplete="off" onSubmit={submitForm}>
-      <label className="greeting-form__label">
+    <form className={s.form} autoComplete="off" onSubmit={submitForm}>
+      <label className={s.label}>
         <span>Введите имя первого игрока</span>
         <input
-          className="greeting-form__input"
+          className={s.input}
           type="text"
           name="namePlayerX"
           onChange={handleChange}
           value={namePlayerX}
+          laceholder="Type the name of player 1"
           required
         />
       </label>
 
-      <label className="greeting-form__label">
+      <label className={s.label}>
         <span>Введите имя второго игрока</span>
         <input
-          className="greeting-form__input"
+          className={s.input}
           type="text"
           name="namePlayerO"
           onChange={handleChange}
@@ -51,9 +61,16 @@ export default function GreetingForm({ onHandleForm }) {
       </label>
 
       <button
+        onMouseEnter={() => {
+          console.log("ховер начался");
+          //setIsStartBtnHovered((prev) => !prev);
+        }}
+        onMouseLeave={() => {
+          console.log("Ховер закончился");
+          // setIsStartBtnHovered((prev) => !prev);
+        }}
         type="submit"
-        className="button greeting-form__submit-btn"
-        disabled={disabled}
+        className={s.submit}
       >
         Начать игру
       </button>
