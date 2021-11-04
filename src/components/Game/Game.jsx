@@ -58,7 +58,7 @@ export default function Game() {
   function closeModal() {
     setShowModal((prevState) => !prevState);
   }
-
+  const playerTurn = players[playerMark].name;
   return (
     <div className="game">
       {showModal ? (
@@ -75,6 +75,7 @@ export default function Game() {
             freezeArena={freezeArena}
           />
           <InformPanel
+            playerTurn={playerTurn}
             namePlayerX={namePlayerX}
             scorePlayerX={scorePlayerX}
             namePlayerO={namePlayerO}

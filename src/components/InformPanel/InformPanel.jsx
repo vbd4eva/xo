@@ -1,6 +1,7 @@
 import React from "react";
 
 export default function InformPanel({
+  playerTurn,
   namePlayerX,
   scorePlayerX,
   namePlayerO,
@@ -15,6 +16,21 @@ export default function InformPanel({
 
   return (
     <div className="game__score">
+      {(freezeArena && (
+        <button
+          className="button score__next-game-btn"
+          type="button"
+          onClick={nextGame}
+        >
+          Play next
+        </button>
+      )) || (
+        <p>
+          The player <br />
+          <b>{playerTurn}</b>
+          <br /> is turn now.
+        </p>
+      )}
       <p className="score__heading">Score</p>
       {Object.keys(players).map((key) => {
         const { name, score } = players[key];
@@ -24,15 +40,6 @@ export default function InformPanel({
           </p>
         );
       })}
-      {freezeArena && (
-        <button
-          className="button score__next-game-btn"
-          type="button"
-          onClick={nextGame}
-        >
-          Play next
-        </button>
-      )}
     </div>
   );
 }
